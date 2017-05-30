@@ -55,28 +55,11 @@ nav.top-nav a {
   color:inherit;
 }
 
-/* Image banner */
-div.banner {
-  background-image: url("https://crabandbee.files.wordpress.com/2017/02/banner-3.jpg");
-  min-height: 180px;
-  background-position: center;
-  opacity: 0.8;
-}
-
-/* Default section display */
-section#blog {
-  display: none;
-}
-section#projects {
-  display: none;
-}
-
 /* Media Queries */
 /* Tablets */
 @media only screen and (min-width: 767px) {
   /* menu rules */
   nav.top-nav ul  {
-    /*background-color: rgba(255, 255, 255, 0);*/
     display: inline-block;
     padding-top: 7px;
     padding-left: 6px;

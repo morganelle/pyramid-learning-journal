@@ -29,7 +29,7 @@ article.blog-post h2 {
 
 p.byline {
   font-family: 'Roboto', sans-serif;
-  margin: 3px 0;
+  margin: 6px 0;
   font-size: 0.9em;
 }
 
@@ -53,6 +53,7 @@ nav.post ul li a,
 nav.post ul li i {
   color: #6E8898;
   font-size: 0.9em;
+  font-weight: 300;
 }
 
 
@@ -93,5 +94,6 @@ section#write-blog h1 {
   font-size: 0.8em;
   border-radius: 3px;
   font-family: 'Roboto', sans-serif;
+  margin-right: 4px;
 }
 
