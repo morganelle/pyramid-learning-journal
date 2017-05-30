@@ -51,6 +51,7 @@ nav.top-nav:hover ul {
 }
 
 nav.top-nav a {
+  font-size: 1em;
   text-decoration: none;
   color:inherit;
 }
