@@ -1,0 +1,18 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div id="page-content">
+        <article class="blog-post">
+          <p class="byline">{{ entry.date }}</p>
+          <h2>{{ entry.title }}</h2>
+          <p class="post-content">{{ entry.text }}</p>
+        </article>
+        <a href="/journal/{{ entry.id }}/edit-entry"><i class="fa fa-pencil fa-right" aria-hidden="true">Edit</i></a>
+        <nav class="post">
+          <ul>
+            <li class="left"><a><i class="fa fa-angle-left fa-left" aria-hidden="true"></i>A great post</a></li>
+            <li class="right"><a>Another great post<i class="fa fa-angle-right fa-right" aria-hidden="true"></i></a></li>
+          </ul>
+        </nav>
+    </div>
+{% endblock content %}
