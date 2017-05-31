@@ -22,7 +22,7 @@ def detail_view(request):
     except IndexError:
         raise HTTPNotFound
     return {
-        'page': entry.title,
+        'page': entry['title'],
         'entry': entry
     }
 
