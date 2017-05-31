@@ -1,7 +1,14 @@
+"""Learning Journal tests."""
 from pyramid import testing
 from pyramid.response import Response
 import pytest
 
+
+@pytest.fixture
+def httprequest():
+    """Return a test request."""
+    request = testing.DummyRequest()
+    return request
 
 @pytest.fixture
 def list_response():
@@ -39,14 +46,22 @@ def update_response():
     return response
 
 
-def test_list_view_returns_response_given_request(list_response):
-    """List view returns a Response object when given a request."""
-    assert isinstance(list_response, Response)
+def test_view_function_returns_responses(httprequest):
+    """Ensure view functions return a Response object."""
+    from learning_journal.views.default import list_view, detail_view, create_view, update_view
+    assert isinstance(list_view(httprequest), Response)
+    assert isinstance(detail_view(httprequest), Response)
+    assert isinstance(create_view(httprequest), Response)
+    assert isinstance(update_view(httprequest), Response)
 
 
-def test_list_view_is_good(list_response):
-    """List view response comes with a status 200 OK."""
-    assert list_response.status_code == 200
+def test_view_function_status_200(httprequest):
+    """Ensure view functions return a Response object."""
+    from learning_journal.views.default import list_view, detail_view, create_view, update_view
+    assert list_view(httprequest).status_code == 200
+    assert detail_view(httprequest).status_code == 200
+    assert create_view(httprequest).status_code == 200
+    assert update_view(httprequest).status_code == 200
 
 
 def test_list_view_returns_proper_content(list_response):
@@ -55,46 +70,16 @@ def test_list_view_returns_proper_content(list_response):
     assert expected_text in list_response.text
 
 
-def test_detail_view_returns_response_given_request(detail_response):
-    """Detail view returns a Response object when given a request."""
-    assert isinstance(detail_response, Response)
-
-
-def test_detail_view_is_good(detail_response):
-    """List detail response comes with a status 200 OK."""
-    assert detail_response.status_code == 200
-
-
 def test_detail_view_returns_proper_content(detail_response):
     """Detail view response includes the content we added."""
     expected_text = '<p class="post-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     assert expected_text in detail_response.text
 
 
-def test_create_view_returns_response_given_request(create_response):
-    """Create view returns a Response object when given a request."""
-    assert isinstance(create_response, Response)
-
-
-def test_create_view_is_good(create_response):
-    """List create response comes with a status 200 OK."""
-    assert create_response.status_code == 200
-
-
 def test_create_view_returns_proper_content(create_response):
     """Create view response includes the content we added."""
     expected_text = '<h1>Create a new post</h1>'
     assert expected_text in create_response.text
-
-
-def test_update_view_returns_response_given_request(update_response):
-    """Update view returns a Response object when given a request."""
-    assert isinstance(update_response, Response)
-
-
-def test_update_view_is_good(update_response):
-    """List update response comes with a status 200 OK."""
-    assert update_response.status_code == 200
 
 
 def test_update_view_returns_proper_content(update_response):
