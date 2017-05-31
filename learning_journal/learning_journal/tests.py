@@ -12,6 +12,33 @@ def list_response():
     return response
 
 
+@pytest.fixture
+def detail_response():
+    """Return a response from the detail view."""
+    from learning_journal.views.default import detail_view
+    request = testing.DummyRequest()
+    response = detail_view(request)
+    return response
+
+
+@pytest.fixture
+def create_response():
+    """Return a response from the create view."""
+    from learning_journal.views.default import create_view
+    request = testing.DummyRequest()
+    response = create_view(request)
+    return response
+
+
+@pytest.fixture
+def update_response():
+    """Return a response from the update view."""
+    from learning_journal.views.default import update_view
+    request = testing.DummyRequest()
+    response = update_view(request)
+    return response
+
+
 def test_list_view_returns_response_given_request(list_response):
     """List view returns a Response object when given a request."""
     assert isinstance(list_response, Response)
@@ -26,15 +53,6 @@ def test_list_view_returns_proper_content(list_response):
     """List view response includes the content we added."""
     expected_text = '<p>Morgan Nomura // Blog</p>'
     assert expected_text in list_response.text
-
-
-@pytest.fixture
-def detail_response():
-    """Return a response from the detail view."""
-    from learning_journal.views.default import detail_view
-    request = testing.DummyRequest()
-    response = detail_view(request)
-    return response
 
 
 def test_detail_view_returns_response_given_request(detail_response):
@@ -53,15 +71,6 @@ def test_detail_view_returns_proper_content(detail_response):
     assert expected_text in detail_response.text
 
 
-@pytest.fixture
-def create_response():
-    """Return a response from the create view."""
-    from learning_journal.views.default import create_view
-    request = testing.DummyRequest()
-    response = create_view(request)
-    return response
-
-
 def test_create_view_returns_response_given_request(create_response):
     """Create view returns a Response object when given a request."""
     assert isinstance(create_response, Response)
@@ -76,15 +85,6 @@ def test_create_view_returns_proper_content(create_response):
     """Create view response includes the content we added."""
     expected_text = '<h1>Create a new post</h1>'
     assert expected_text in create_response.text
-
-
-@pytest.fixture
-def update_response():
-    """Return a response from the update view."""
-    from learning_journal.views.default import update_view
-    request = testing.DummyRequest()
-    response = update_view(request)
-    return response
 
 
 def test_update_view_returns_response_given_request(update_response):
