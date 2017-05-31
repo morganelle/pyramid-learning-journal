@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Meta tag for media queries -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <title>Portfolio</title>
+    <!-- Font Awesome CDN -->
+    <script src="https://use.fontawesome.com/457d33e4c6.js"></script>
+    <!-- Stylesheets -->
+    <link rel=icon href="../static/favicon.png">
+    <link rel="stylesheet" href="../static/styles/external/normalize.css">
+    <link rel="stylesheet" href="../static/styles/base.css">
+    <link rel="stylesheet" href="../static/styles/layout.css">
+    <link rel="stylesheet" href="../static/styles/module.css">
+    <link rel="stylesheet" href="../static/styles/state.css">
+    <title>Blog post title</title>
+  </head>
+  <body>
+    <header>
+      <nav class="top-nav">
+        <i class="fa fa-bars menu" aria-hidden="true"></i>
+        <ul id="connect-nav">
+          <li><a href="https://www.linkedin.com/in/morgan-nomura-36a57b8" target="_blank"><i class="fa fa-linkedin-square" aria-hidden="true"></i>LinkedIn<a/></li>
+          <li><a href="#" target="_blank"><i class="fa fa-github-square" aria-hidden="true"></i>GitHub</a></li>
+        </ul>
+      </nav>
+      <a href="/">
+        <img src="../static/assets/nodes.png"/>
+        <p>Morgan Nomura // Blog</p>
+      </a>
+    </header>
+      <div id="page-content">
+        <article class="blog-post">
+          <p class="byline">May 30, 2017</p>
+          <h2>Title goes here</h2>
+          <p class="post-content">We got our start in the Pyramid framework today. (I always find it a little challenging to follow on these setup-intensive days before the steps make sense.) One of the questions I've been wondering about is the difference between a library and a framework. The answer that made the most sense to me was that the code you (the developer) writes calls on the functionality in a library while a framework calls your code. Martin Fowler has a blog post called <a href="https://martinfowler.com/bliki/InversionOfControl.html">Inversion of Control</a> that was pretty interesting.</p>
+          <p>Given that definition, I think Pyramid is the first true framework I've worked with.</p>
+        </article>
+        <a href="/journal/1/edit-entry"><i class="fa fa-pencil fa-right" aria-hidden="true">Edit</i></a>
+        <nav class="post">
+          <ul>
+            <li class="left"><a><i class="fa fa-angle-left fa-left" aria-hidden="true"></i>A great post</a></li>
+            <li class="right"><a>Another great post<i class="fa fa-angle-right fa-right" aria-hidden="true"></i></a></li>
+          </ul>
+        </nav>
+      </div>
+      <!-- <footer>Copyright Morgan Nomura 2017</footer> -->
+  </body>
+</html>
