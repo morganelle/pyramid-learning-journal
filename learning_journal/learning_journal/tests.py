@@ -1,6 +1,8 @@
 """Learning Journal tests."""
 from pyramid import testing
-from pyramid.response import Response
+# from pyramid.response import Response
+from pyramid.httpexceptions import HTTPNotFound
+from learning_journal.views.data.entries import ENTRIES
 import pytest
 
 
@@ -9,6 +11,7 @@ def httprequest():
     """Return a test request."""
     request = testing.DummyRequest()
     return request
+
 
 @pytest.fixture
 def list_response():
@@ -24,6 +27,7 @@ def detail_response():
     """Return a response from the detail view."""
     from learning_journal.views.default import detail_view
     request = testing.DummyRequest()
+    request.matchdict['id'] = 0
     response = detail_view(request)
     return response
 
@@ -42,47 +46,69 @@ def update_response():
     """Return a response from the update view."""
     from learning_journal.views.default import update_view
     request = testing.DummyRequest()
+    request.matchdict['id'] = 0
     response = update_view(request)
     return response
 
 
-def test_view_function_returns_responses(httprequest):
-    """Ensure view functions return a Response object."""
-    from learning_journal.views.default import list_view, detail_view, create_view, update_view
-    assert isinstance(list_view(httprequest), Response)
-    assert isinstance(detail_view(httprequest), Response)
-    assert isinstance(create_view(httprequest), Response)
-    assert isinstance(update_view(httprequest), Response)
+def test_list_view_returns_content(list_response):
+    """List view response includes content."""
+    assert 'page' in list_response
+    assert 'entry' in list_response
+    assert list_response['entry'] == ENTRIES
 
 
-def test_view_function_status_200(httprequest):
-    """Ensure view functions return a Response object."""
-    from learning_journal.views.default import list_view, detail_view, create_view, update_view
-    assert list_view(httprequest).status_code == 200
-    assert detail_view(httprequest).status_code == 200
-    assert create_view(httprequest).status_code == 200
-    assert update_view(httprequest).status_code == 200
+def test_create_view_returns_content(create_response):
+    """Create view response includes content."""
+    assert 'page' in create_response
 
 
-def test_list_view_returns_proper_content(list_response):
-    """List view response includes the content we added."""
-    expected_text = '<p>Morgan Nomura // Blog</p>'
-    assert expected_text in list_response.text
+def test_detail_view_returns_content(detail_response):
+    """Detail view response includes content."""
+    assert 'page' in detail_response
+    assert 'entry' in detail_response
+    assert detail_response['entry'] == ENTRIES[0]
 
 
-def test_detail_view_returns_proper_content(detail_response):
-    """Detail view response includes the content we added."""
-    expected_text = '<p class="post-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    assert expected_text in detail_response.text
+def test_update_view_returns_content(update_response):
+    """Detail view response includes content."""
+    assert 'page' in update_response
+    assert 'entry' in update_response
+    assert update_response['entry'] == ENTRIES[0]
 
 
-def test_create_view_returns_proper_content(create_response):
-    """Create view response includes the content we added."""
-    expected_text = '<h1>Create a new post</h1>'
-    assert expected_text in create_response.text
+def test_detail_view_with_id_raises_except():
+    """."""
+    from learning_journal.views.default import detail_view
+    request = testing.DummyRequest()
+    request.matchdict['id'] = '1000'
+    with pytest.raises(HTTPNotFound):
+        detail_view(request)
 
 
-def test_update_view_returns_proper_content(update_response):
-    """Update view response includes the content we added."""
-    expected_text = '<h1>Edit post</h1>'
-    assert expected_text in update_response.text
+def test_update_view_with_id_raises_except():
+    """."""
+    from learning_journal.views.default import update_view
+    request = testing.DummyRequest()
+    request.matchdict['id'] = '1000'
+    with pytest.raises(HTTPNotFound):
+        update_view(request)
+
+
+# ++++++++ Functional Tests +++++++++ #
+
+
+@pytest.fixture
+def testapp():
+    """Create a test application for functional tests."""
+    from learning_journal import main
+    from webtest import TestApp
+    app = main({})
+    return TestApp(app)
+
+
+def test_home_route_returns_home_content(testapp):
+    """."""
+    response = testapp.get('/')
+    html = response.html
+    assert str(html.find('h2')) == '<h2>Entry 1</h2>'
