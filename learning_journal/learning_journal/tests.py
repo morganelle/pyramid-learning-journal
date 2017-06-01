@@ -95,6 +95,11 @@ def test_update_view_with_id_raises_except():
         update_view(request)
 
 
+def test_entries():
+    """Test validity of dictionary."""
+    assert type(ENTRIES[0]) == dict
+
+
 # ++++++++ Functional Tests +++++++++ #
 
 
