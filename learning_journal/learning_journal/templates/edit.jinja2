@@ -1,0 +1,19 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div id="page-content">
+      <section id="write-blog">
+        <h1>Edit post</h1>
+        <form id="blog-fields">
+          <label class="label">Title</label>
+            <input type="text" id="post-title" value="{{ entry.title }}" required>
+          <label class="label">Publish date</label>
+            <input id="post-date" required type="date">
+          <label class="label">Content</label>
+            <textarea  id="post-content" required rows="20" >{{ entry.text }}</textarea>
+          <input type="submit" value="Update" class="button">
+          <input type="reset" value="Cancel" class="button"/>
+        </form>
+      </section>
+    </div>
+{% endblock content %}
