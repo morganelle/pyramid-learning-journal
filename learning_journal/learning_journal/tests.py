@@ -112,8 +112,10 @@ def testapp():
     return TestApp(app)
 
 
-def test_home_route_returns_home_content(testapp):
-    """."""
+def test_list_route_returns_list_content(testapp):
+    """Test list route creates page that has list entries."""
     response = testapp.get('/')
     html = response.html
-    assert str(html.find('h2')) == '<h2>Entry 1</h2>'
+    post_count = html.find_all('section')
+    assert html.find('h2').text == 'Entry 1'
+    assert len(post_count) == len(ENTRIES)
