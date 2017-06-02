@@ -24,11 +24,11 @@ def detail_view(request):
     if not entry:
         raise HTTPNotFound
     return {
-        'page': entry['title'],
-        'date': entry['publish_date'],
-        'title': entry['title'],
-        'text': entry['body'],
-        'id': entry['id']
+        'page': entry.title,
+        'date': entry.publish_date,
+        'title': entry.title,
+        'text': entry.body,
+        'id': entry.id
     }
 
 
@@ -50,8 +50,8 @@ def update_view(request):
         raise HTTPNotFound
     return {
         'page': 'Edit Entry',
-        'date': entry['publish_date'],
-        'title': entry['title'],
-        'text': entry['body'],
-        'id': entry['id']
+        'date': entry.publish_date,
+        'title': entry.title,
+        'text': entry.body,
+        'id': entry.id
     }
