@@ -15,7 +15,6 @@ ipython-genutils==0.2.0
 jedi==0.10.2
 Jinja2==2.9.6
 jinja2-time==0.2.0
--e git+https://github.com/morganelle/pyramid-learning-journal.git@9eecda497adbbb7b8f940c133057ca756dfc2212#egg=learning_journal&subdirectory=learning_journal
 Mako==1.0.6
 MarkupSafe==1.0
 packaging==16.8
@@ -25,6 +24,7 @@ pickleshare==0.7.4
 pluggy==0.4.0
 poyo==0.4.1
 prompt-toolkit==1.0.14
+psycopg2==2.7.1
 ptyprocess==0.5.1
 py==1.4.33
 Pygments==2.2.0
