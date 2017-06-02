@@ -3,11 +3,11 @@
 {% block content %}
     <div id="page-content">
         <article class="blog-post">
-          <p class="byline">{{ entry.date }}</p>
-          <h2>{{ entry.title }}</h2>
-          <p class="post-content">{{ entry.text }}</p>
+          <p class="byline">{{ date }}</p>
+          <h2>{{ title }}</h2>
+          <p class="post-content">{{ text }}</p>
         </article>
-        <a href="/journal/{{ entry.id }}/edit-entry"><i class="fa fa-pencil fa-right" aria-hidden="true">Edit</i></a>
+        <a href="/journal/{{ id }}/edit-entry"><i class="fa fa-pencil fa-right" aria-hidden="true">Edit</i></a>
         <nav class="post">
           <ul>
             <li class="left"><a><i class="fa fa-angle-left fa-left" aria-hidden="true"></i>A great post</a></li>
