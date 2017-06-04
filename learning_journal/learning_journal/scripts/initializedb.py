@@ -42,18 +42,18 @@ def main(argv=sys.argv):
 
     # Code above will set up database. Code below populates it.
 
-    # session_factory = get_session_factory(engine)
+    session_factory = get_session_factory(engine)
 
-    # with transaction.manager:
-    #     dbsession = get_tm_session(session_factory, transaction.manager)
+    with transaction.manager:
+        dbsession = get_tm_session(session_factory, transaction.manager)
 
-    #     many_models = []
-    #     for post in ENTRIES:
-    #         new_entry = JournalEntry(
-    #             title=post['title'],
-    #             publish_date=datetime.datetime.strptime(post['publish_date'], '%m/%d/%Y'),
-    #             author=post['author'],
-    #             body=post['body']
-    #         )
-    #         many_models.append(new_entry)
-    #     dbsession.add_all(many_models)
+        many_models = []
+        for post in ENTRIES:
+            new_entry = JournalEntry(
+                title=post['title'],
+                publish_date=datetime.datetime.strptime(post['publish_date'], '%m/%d/%Y'),
+                author=post['author'],
+                body=post['body']
+            )
+            many_models.append(new_entry)
+        dbsession.add_all(many_models)
