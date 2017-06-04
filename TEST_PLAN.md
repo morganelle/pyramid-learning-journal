@@ -10,6 +10,10 @@
 - create_view raises error if POST request missing data
 - detail_view raises HTTPNotFound error if JournalEntry doesn't exist
 - update_view raises HTTPNotFound error if JournalEntry doesn't exist
+- create_view returns an empty dictionary for POST request
+- create_view returns dictionary for incomplete POST request
+- update_view has 302 status code after successful POST
+- create_view has 302 status code after POST
 
 ## Unit tests: models
 - generated journal entries are instance of JournalEntry model class 
@@ -17,6 +21,7 @@
 - model can be updated in database
 - list view returns empty when database empty
 - list view shows same number of items as database
+
 
 ## Functional tests: system
 - update_view redirects to detail view of journal entry
