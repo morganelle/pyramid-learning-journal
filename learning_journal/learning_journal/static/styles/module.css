@@ -40,6 +40,10 @@ p.read-more i {
   color: #6E8898;
 }
 
+#page-content input.button {
+  margin-top: 50px;
+}
+
 
 /* Blog display */
 article.blog-post h2 {
@@ -116,5 +120,6 @@ section#write-blog h1 {
   border-radius: 3px;
   font-family: 'Roboto', sans-serif;
   margin-right: 4px;
+  margin-top: 0;
 }
 
