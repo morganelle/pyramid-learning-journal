@@ -278,7 +278,7 @@ def test_detail_with_invald_id(testapp):
 
 
 def test_new_entry_redirects_to_home(testapp, empty_the_db):
-    """When redirection is followed, result is home page."""
+    """New post added successfully, check reroute."""
     post_data = {
         'title': FAKE_FACTORY.text(20),
         'body': FAKE_FACTORY.text(300)
@@ -286,3 +286,15 @@ def test_new_entry_redirects_to_home(testapp, empty_the_db):
     response = testapp.post('/journal/new-entry', post_data)
     list_route = testapp.app.routes_mapper.get_route('list').path
     assert response.location == SITE_ROOT + list_route
+
+
+def test_new_expense_redirection_lands_on_home(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    response = testapp.post('/journal/new-entry', post_data)
+    next_response = response.follow()
+    list_response = testapp.get('/')
+    assert next_response.text == list_response.text
