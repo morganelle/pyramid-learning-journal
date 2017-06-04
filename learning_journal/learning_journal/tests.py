@@ -133,7 +133,7 @@ def testapp(request):
 
 @pytest.fixture
 def fill_the_db(testapp):
-    """File the DB."""
+    """Fill the DB."""
     SessionFactory = testapp.app.registry["dbsession_factory"]
     with transaction.manager:
         dbsession = get_tm_session(SessionFactory, transaction.manager)
@@ -193,16 +193,6 @@ def fill_the_db(testapp):
 
 # # ++++++++ Functional Tests +++++++++ #
 
-
-def test_list_route_returns_list_content(testapp):
-    """Test list route creates page that has list entries."""
-    response = testapp.get('/')
-    html = response.html
-    post_count = html.find_all('section')
-    assert html.find('h2').text in JOURNAL_ENTRIES[0].title
-    assert len(post_count) == len(JOURNAL_ENTRIES)
-
-
 def test_model_gets_added(db_session):
     """Test to see if we can instantiate and load a DB."""
     assert len(db_session.query(JournalEntry).all()) == 0
@@ -214,6 +204,22 @@ def test_model_gets_added(db_session):
     )
     db_session.add(model)
     assert len(db_session.query(JournalEntry).all()) == 1
+
+
+def test_db_fill(fill_the_db):
+    """Test to see if we can instantiate and load a DB."""
+    fill_the_db
+    assert len(db_session.query(JournalEntry).all()) == 20
+
+
+def test_list_route_returns_list_content(testapp):
+    """Test list route creates page that has list entries."""
+    response = testapp.get('/')
+    html = response.html
+    post_count = html.find_all('section')
+    assert html.find('h2').text == JOURNAL_ENTRIES[0].title
+    import pdb; pdb.set_trace()
+    assert len(post_count) == len(JOURNAL_ENTRIES)
 
 
 def test_list_view_returns_dict(dummy_request):

@@ -2,7 +2,6 @@
 source = learning_journal
 omit = 
     learning_journal/test*
-    learning_journal/models/*
     learning_journal/scripts/*
     learning_journal/views/notfound.py
     learning_journal/views/__init__.py
