@@ -8,21 +8,31 @@ Deployed on Heroku at https://rocky-inlet-61764.herokuapp.com/
 
 ### Test coverage:
 
----------- coverage: platform darwin, python 3.6.1-final-0 -----------
-Name                                      Stmts   Miss  Cover
--------------------------------------------------------------
-learning_journal/views/data/ENTRIES.py        1      0   100%
+---------- coverage: platform darwin, python 2.7.13-final-0 ----------
+Name                                      Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------
+learning_journal/models/__init__.py          22      0   100%
+learning_journal/models/entries.py            9      0   100%
+learning_journal/models/meta.py               5      0   100%
 learning_journal/views/data/__init__.py       0      0   100%
-learning_journal/views/data/entries.py        1      1     0%
-learning_journal/views/default.py            21      0   100%
--------------------------------------------------------------
-TOTAL                                        23      1    96%
+learning_journal/views/data/entries.py        1      0   100%
+learning_journal/views/default.py            24      0   100%
+learning_journal/views/notfound.py            4      0   100%
+-----------------------------------------------------------------------
+TOTAL                                        65      0   100%
 
-8 passed in 1.92 seconds
-____________________________________________________________ summary ____________________________________________________________
-  py27: commands succeeded
-  py36: commands succeeded
-  congratulations :)
+---------- coverage: platform darwin, python 3.6.1-final-0 -----------
+Name                                      Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------
+learning_journal/models/__init__.py          22      0   100%
+learning_journal/models/entries.py            9      0   100%
+learning_journal/models/meta.py               5      0   100%
+learning_journal/views/data/__init__.py       0      0   100%
+learning_journal/views/data/entries.py        1      0   100%
+learning_journal/views/default.py            24      0   100%
+learning_journal/views/notfound.py            4      0   100%
+-----------------------------------------------------------------------
+TOTAL                                        65      0   100%
 
 
 ### Color palette
