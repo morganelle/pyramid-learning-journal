@@ -59,12 +59,21 @@ def update_view(request):
     the_id = int(request.matchdict['id'])
     session = request.dbsession
     entry = session.query(JournalEntry).get(the_id)
+
     if not entry:
         raise HTTPNotFound
-    return {
-        'page': 'Edit Entry',
-        'date': entry.publish_date,
-        'title': entry.title,
-        'text': entry.body,
-        'id': entry.id
-    }
+
+    if request.method == 'GET':
+        return {
+            'page': 'Edit Entry',
+            'date': entry.publish_date,
+            'title': entry.title,
+            'text': entry.body,
+            'id': entry.id
+        }
+
+    if request.method == 'POST':
+        entry.title = request.POST['title'],
+        entry.body = request.POST['body']
+        request.dbsession.flush()
+        return HTTPFound(request.route_url('detail', id=entry.id))
