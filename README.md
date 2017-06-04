@@ -2,11 +2,16 @@
 
 Author: Morgan Nomura
 
-### Deployment
+## Deployment:
 Deployed on Heroku at https://rocky-inlet-61764.herokuapp.com/
 
 
-### Test coverage:
+## Tests:
+### Test plan
+Please see TEST_PLAN.md
+
+### Test coverage
+Latest tox report:
 
 ---------- coverage: platform darwin, python 2.7.13-final-0 ----------
 Name                                      Stmts   Miss  Cover   Missing
