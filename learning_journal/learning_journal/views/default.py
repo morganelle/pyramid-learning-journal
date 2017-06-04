@@ -26,7 +26,7 @@ def detail_view(request):
         raise HTTPNotFound
     return {
         'page': entry.title,
-        'date': datetime.datetime.strftime(entry.publish_date, '%A %B %d, %Y'),
+        'date': datetime.datetime.strftime(entry.publish_date, '%A %B %-d, %Y'),
         'title': entry.title,
         'text': entry.body,
         'id': entry.id

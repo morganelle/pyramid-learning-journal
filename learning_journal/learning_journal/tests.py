@@ -1,7 +1,6 @@
 """Learning Journal tests."""
 from pyramid import testing
 from pyramid.config import Configurator
-# from pyramid.response import Response
 from pyramid.httpexceptions import HTTPNotFound
 from learning_journal.models import JournalEntry, get_tm_session
 import pytest
@@ -16,7 +15,7 @@ JOURNAL_ENTRIES = [JournalEntry(
     author=FAKE_FACTORY.name(),
     body=FAKE_FACTORY.text(300),
     publish_date=datetime.datetime.now(),
-    title=FAKE_FACTORY.text(300)
+    title=FAKE_FACTORY.text(20)
 ) for i in range(20)]
 
 
@@ -59,7 +58,7 @@ def db_session(configuration, request):
 
 @pytest.fixture
 def dummy_request(db_session):
-    """Instantiate a fake HTTP Request, complete with a database session."""
+    """Instantiate a fake HTTP Request with a database session."""
     return testing.DummyRequest(dbsession=db_session)
 
 
@@ -149,9 +148,9 @@ def fill_the_db(testapp):
 #     assert list_response['entry'] == entry
 
 
-# def test_create_view_returns_content(create_response):
-#     """Create view response includes content."""
-#     assert 'page' in create_response
+def test_create_view_returns_content(create_response):
+    """Create view response includes content."""
+    assert 'page' in create_response
 
 
 # def test_detail_view_returns_content(detail_response):
@@ -168,30 +167,28 @@ def fill_the_db(testapp):
 #     assert update_response['entry'] == ENTRIES[0]
 
 
-# def test_detail_view_with_id_raises_except():
-#     """."""
-#     from learning_journal.views.default import detail_view
-#     request = testing.DummyRequest()
-#     request.matchdict['id'] = '1000'
-#     with pytest.raises(HTTPNotFound):
-#         detail_view(request)
+def test_detail_view_with_id_raises_except(dummy_request):
+    """."""
+    from learning_journal.views.default import detail_view
+    dummy_request.matchdict['id'] = '1000'
+    with pytest.raises(HTTPNotFound):
+        detail_view(dummy_request)
 
 
-# def test_update_view_with_id_raises_except():
-#     """."""
-#     from learning_journal.views.default import update_view
-#     request = testing.DummyRequest()
-#     request.matchdict['id'] = '1000'
-#     with pytest.raises(HTTPNotFound):
-#         update_view(request)
+def test_update_view_with_id_raises_except(dummy_request):
+    """."""
+    from learning_journal.views.default import update_view
+    dummy_request.matchdict['id'] = '1000'
+    with pytest.raises(HTTPNotFound):
+        update_view(dummy_request)
 
 
-# def test_entries():
-#     """Test validity of dictionary."""
-#     assert type(ENTRIES[0]) == dict
+def test_entries():
+    """Test validity of dictionary."""
+    assert isinstance(JOURNAL_ENTRIES[0], JournalEntry)
 
 
-# # ++++++++ Functional Tests +++++++++ #
+# # ++++++++ Unit Tests +++++++++ #
 
 def test_model_gets_added(db_session):
     """Test to see if we can instantiate and load a DB."""
@@ -204,22 +201,6 @@ def test_model_gets_added(db_session):
     )
     db_session.add(model)
     assert len(db_session.query(JournalEntry).all()) == 1
-
-
-def test_db_fill(fill_the_db):
-    """Test to see if we can instantiate and load a DB."""
-    fill_the_db
-    assert len(db_session.query(JournalEntry).all()) == 20
-
-
-def test_list_route_returns_list_content(testapp):
-    """Test list route creates page that has list entries."""
-    response = testapp.get('/')
-    html = response.html
-    post_count = html.find_all('section')
-    assert html.find('h2').text == JOURNAL_ENTRIES[0].title
-    import pdb; pdb.set_trace()
-    assert len(post_count) == len(JOURNAL_ENTRIES)
 
 
 def test_list_view_returns_dict(dummy_request):
@@ -242,3 +223,46 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
     response = list_view(dummy_request)
     query = dummy_request.dbsession.query(JournalEntry)
     assert len(response['entry']) == query.count()
+
+
+# def test_update_view_returns_content(dummy_request, add_models):
+#     """List view response matches database count."""
+#     from learning_journal.views.default import update_view
+#     response = update_view(dummy_request)
+#     query = dummy_request.dbsession.query(JournalEntry)
+#     assert len(response['entry']) == query.count()
+
+
+# # ++++++++ Functional Tests +++++++++ #
+
+def test_db_fill(fill_the_db):
+    """Test to see if we can instantiate and load a DB."""
+    fill_the_db
+    assert len(fill_the_db.query(JournalEntry).all()) == 20
+
+
+def test_list_route_returns_list_content(testapp, fill_the_db):
+    """Test list route creates page that has list entries."""
+    fill_the_db
+    response = testapp.get('/')
+    html = response.html
+    post_count = html.find_all('section')
+    assert len(post_count) == len(JOURNAL_ENTRIES)
+
+
+def test_detail_route_returns_detail_content(testapp):
+    """Test list route creates page that has list entries."""
+    response = testapp.get('/journal/1')
+    assert '<article class="blog-post">' in response.text
+
+
+def test_update_route_returns_detail_content(testapp):
+    """Test list route creates page that has list entries."""
+    response = testapp.get('/journal/10/edit-entry')
+    assert '<h1>Edit post</h1>' in response.text
+
+
+def test_detail_with_invald_id(testapp):
+    """."""
+    response = testapp.get('/journal/cake', status=404)
+    assert 'Page Not Found' in response.text
