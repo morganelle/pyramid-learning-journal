@@ -40,7 +40,7 @@ def main(argv=sys.argv):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
-    # Code above will set up database. Code below gives access
+    # Code above will set up database. Code below populates it.
 
     session_factory = get_session_factory(engine)
 
@@ -51,7 +51,7 @@ def main(argv=sys.argv):
         for post in ENTRIES:
             new_entry = JournalEntry(
                 title=post['title'],
-                publish_date=datetime.datetime.now(),
+                publish_date=datetime.datetime.strptime(post['publish_date'], '%m/%d/%Y'),
                 author=post['author'],
                 body=post['body']
             )

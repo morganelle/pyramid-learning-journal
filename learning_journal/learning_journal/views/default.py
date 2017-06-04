@@ -2,13 +2,14 @@
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 from learning_journal.models import JournalEntry
+import datetime
 
 
 @view_config(route_name='list', renderer='../templates/list.jinja2')
 def list_view(request):
     """Return the home view."""
     session = request.dbsession
-    entry = session.query(JournalEntry).all()
+    entry = session.query(JournalEntry).order_by(JournalEntry.publish_date.desc()).all()
     return {
         'page': 'Home',
         'entry': entry
@@ -25,7 +26,7 @@ def detail_view(request):
         raise HTTPNotFound
     return {
         'page': entry.title,
-        'date': entry.publish_date,
+        'date': datetime.datetime.strftime(entry.publish_date, '%A %B %d, %Y'),
         'title': entry.title,
         'text': entry.body,
         'id': entry.id
