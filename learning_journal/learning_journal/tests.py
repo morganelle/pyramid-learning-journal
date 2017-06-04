@@ -10,6 +10,7 @@ from faker import Faker
 import transaction
 
 
+SITE_ROOT = "http://localhost"
 FAKE_FACTORY = Faker()
 JOURNAL_ENTRIES = [JournalEntry(
     author=FAKE_FACTORY.name(),
@@ -31,7 +32,8 @@ def configuration(request):
     config = testing.setUp(settings={
         'sqlalchemy.url': 'postgres:///test_journal'
     })
-    config.include("learning_journal.models")
+    config.include('learning_journal.models')
+    config.include('learning_journal.routes')
 
     def teardown():
         testing.tearDown()
@@ -141,12 +143,16 @@ def fill_the_db(testapp):
     return dbsession
 
 
+@pytest.fixture
+def empty_the_db(testapp):
+    """Clear database and create a new empty one."""
+    SessionFactory = testapp.app.registry['dbsession_factory']
+    engine = SessionFactory().bind
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+
 # ++++++++ Unit Tests +++++++++ #
-
-
-def test_create_view_returns_content(create_response):
-    """Create view response includes content."""
-    assert 'page' in create_response
 
 
 def test_detail_view_with_id_raises_except(dummy_request):
@@ -205,7 +211,39 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
     assert len(response['entry']) == query.count()
 
 
-# # ++++++++ Functional Tests +++++++++ #
+def test_create_view_post_empty_is_empty_dict(dummy_request):
+    """POST requests should return empty dictionary."""
+    from learning_journal.views.default import create_view
+    dummy_request.method = "POST"
+    response = create_view(dummy_request)
+    assert response == {}
+
+
+def test_create_view_post_incomplete_data_returns_data(dummy_request):
+        """Incomplete POST data returned to user."""
+        from learning_journal.views.default import create_view
+        dummy_request.method = "POST"
+        post_data = {'body': 'fake title', 'title': ''}
+        dummy_request.POST = post_data
+        response = create_view(dummy_request)
+        assert response == post_data
+
+
+def test_create_view_post_with_data_302(dummy_request):
+        """POST request with correct data should redirect with status code 302."""
+        from learning_journal.views.default import create_view
+        dummy_request.method = "POST"
+        post_data = {
+            'title': 'cake title',
+            'body': FAKE_FACTORY.text(300)
+        }
+        dummy_request.POST = post_data
+        response = create_view(dummy_request)
+        assert response.status_code == 302
+
+
+# ++++++++ Functional Tests +++++++++ #
+
 
 def test_db_fill(fill_the_db):
     """Test to instantiate and load a DB."""
@@ -237,3 +275,14 @@ def test_detail_with_invald_id(testapp):
     """."""
     response = testapp.get('/journal/cake', status=404)
     assert 'Page Not Found' in response.text
+
+
+def test_new_entry_redirects_to_home(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    response = testapp.post('/journal/new-entry', post_data)
+    list_route = testapp.app.routes_mapper.get_route('list').path
+    assert response.location == SITE_ROOT + list_route

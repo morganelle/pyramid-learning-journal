@@ -39,6 +39,11 @@ def create_view(request):
     print('in create view')
     print(request, request.method)
     if request.method == 'POST' and request.POST:
+        if not request.POST['title'] or not request.POST['body']:
+            return {
+                'title': request.POST['title'],
+                'body': request.POST['body']
+            }
         print('in createview POST logic')
         new_entry = JournalEntry(
             title=request.POST['title'],
