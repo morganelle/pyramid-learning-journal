@@ -1,6 +1,7 @@
 # pyramid-learning-journal
 
-Author: Morgan Nomura
+Owner: Morgan Nomura
+Collaborators: James Feore
 
 ## Deployment:
 Deployed on Heroku at https://rocky-inlet-61764.herokuapp.com/

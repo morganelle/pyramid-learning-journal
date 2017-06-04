@@ -12,7 +12,11 @@
 - update_view raises HTTPNotFound error if JournalEntry doesn't exist
 
 ## Unit tests: models
-
+- generated journal entries are instance of JournalEntry model class 
+- model can be added successfully to database
+- model can be updated in database
+- list view returns empty when database empty
+- list view shows same number of items as database
 
 ## Functional tests: system
 - update_view redirects to detail view of journal entry

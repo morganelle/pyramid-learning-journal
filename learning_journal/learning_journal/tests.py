@@ -209,7 +209,6 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
 
 def test_db_fill(fill_the_db):
     """Test to instantiate and load a DB."""
-    fill_the_db
     assert len(fill_the_db.query(JournalEntry).all()) == 20
 
 
