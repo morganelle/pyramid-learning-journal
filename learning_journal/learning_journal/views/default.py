@@ -1,6 +1,6 @@
 """Set up the route returns."""
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from learning_journal.models import JournalEntry
 import datetime
 
@@ -36,9 +36,21 @@ def detail_view(request):
 @view_config(route_name='create', renderer='../templates/new.jinja2')
 def create_view(request):
     """Return the create view."""
-    return {
-        'page': 'New Entry'
-    }
+    print('in create view')
+    print(request, request.method)
+    if request.method == 'POST' and request.POST:
+        print('in createview POST logic')
+        new_entry = JournalEntry(
+            title=request.POST['title'],
+            body=request.POST['body'],
+            author='Morgan',
+            publish_date=datetime.datetime.now()
+        )
+        request.dbsession.add(new_entry)
+        return HTTPFound(
+            location=request.route_url('list')
+        )
+    return {}
 
 
 @view_config(route_name='update', renderer='../templates/edit.jinja2')
