@@ -15,7 +15,9 @@ from ..models import (
     get_session_factory,
     get_tm_session,
     )
-from ..models import MyModel
+from learning_journal.models import JournalEntry
+from learning_journal.views.data.entries import ENTRIES
+import datetime
 
 
 def usage(argv):
@@ -32,14 +34,26 @@ def main(argv=sys.argv):
     options = parse_vars(argv[2:])
     setup_logging(config_uri)
     settings = get_appsettings(config_uri, options=options)
+    settings['sqlalchemy.url'] = os.environ.get('DATABASE_URL')
 
     engine = get_engine(settings)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+
+    # Code above will set up database. Code below populates it.
 
     session_factory = get_session_factory(engine)
 
     with transaction.manager:
         dbsession = get_tm_session(session_factory, transaction.manager)
 
-        model = MyModel(name='one', value=1)
-        dbsession.add(model)
+        many_models = []
+        for post in ENTRIES:
+            new_entry = JournalEntry(
+                title=post['title'],
+                publish_date=datetime.datetime.strptime(post['publish_date'], '%m/%d/%Y'),
+                author=post['author'],
+                body=post['body']
+            )
+            many_models.append(new_entry)
+        dbsession.add_all(many_models)
