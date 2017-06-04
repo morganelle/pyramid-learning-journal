@@ -141,30 +141,12 @@ def fill_the_db(testapp):
     return dbsession
 
 
-# def test_list_view_returns_content(list_response):
-#     """List view response includes content."""
-#     assert 'page' in list_response
-#     assert 'entry' in list_response
-#     assert list_response['entry'] == entry
+# ++++++++ Unit Tests +++++++++ #
 
 
 def test_create_view_returns_content(create_response):
     """Create view response includes content."""
     assert 'page' in create_response
-
-
-# def test_detail_view_returns_content(detail_response):
-#     """Detail view response includes content."""
-#     assert 'page' in detail_response
-#     assert 'entry' in detail_response
-#     assert detail_response['entry'] == ENTRIES[0]
-
-
-# def test_update_view_returns_content(update_response):
-#     """Detail view response includes content."""
-#     assert 'page' in update_response
-#     assert 'entry' in update_response
-#     assert update_response['entry'] == ENTRIES[0]
 
 
 def test_detail_view_with_id_raises_except(dummy_request):
@@ -187,8 +169,6 @@ def test_entries():
     """Test validity of dictionary."""
     assert isinstance(JOURNAL_ENTRIES[0], JournalEntry)
 
-
-# # ++++++++ Unit Tests +++++++++ #
 
 def test_model_gets_added(db_session):
     """Test to see if we can instantiate and load a DB."""
@@ -223,14 +203,6 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
     response = list_view(dummy_request)
     query = dummy_request.dbsession.query(JournalEntry)
     assert len(response['entry']) == query.count()
-
-
-# def test_update_view_returns_content(dummy_request, add_models):
-#     """List view response matches database count."""
-#     from learning_journal.views.default import update_view
-#     response = update_view(dummy_request)
-#     query = dummy_request.dbsession.query(JournalEntry)
-#     assert len(response['entry']) == query.count()
 
 
 # # ++++++++ Functional Tests +++++++++ #
