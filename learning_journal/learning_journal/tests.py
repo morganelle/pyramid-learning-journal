@@ -214,7 +214,7 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
 def test_create_view_post_empty_is_empty_dict(dummy_request):
     """POST requests should return empty dictionary."""
     from learning_journal.views.default import create_view
-    dummy_request.method = "POST"
+    dummy_request.method = 'POST'
     response = create_view(dummy_request)
     assert response == {}
 
@@ -245,9 +245,18 @@ def test_create_view_post_with_data_302(dummy_request):
 # ++++++++ Functional Tests +++++++++ #
 
 
-def test_db_fill(fill_the_db):
+def test_no_items_on_list_empty_db(testapp):
+    """When redirection is followed, result is home page."""
+    response = testapp.get('/')
+    post_count = response.html.find_all('section')
+    assert len(post_count) == 0
+
+
+def test_db_fill(testapp, fill_the_db):
     """Test to instantiate and load a DB."""
-    assert len(fill_the_db.query(JournalEntry).all()) == 20
+    response = testapp.get('/')
+    post_count = response.html.find_all('section')
+    assert len(fill_the_db.query(JournalEntry).all()) == len(post_count)
 
 
 def test_list_route_returns_list_content(testapp, fill_the_db):
@@ -268,6 +277,30 @@ def test_detail_route_returns_detail_content(testapp):
 def test_update_route_returns_detail_content(testapp):
     """Test list route creates page that has list entries."""
     response = testapp.get('/journal/10/edit-entry')
+    assert '<h1>Edit post</h1>' in response.text
+
+
+def test_detail_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/1', status=200)
+    assert '<article class="blog-post">' in response.text
+
+
+def test_list_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/', status=200)
+    assert '<a href="/journal/new-entry">' in response.text
+
+
+def test_create_view_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/new-entry', status=200)
+    assert '<h1>Create a new post</h1>' in response.text
+
+
+def test_update_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/1/edit-entry', status=200)
     assert '<h1>Edit post</h1>' in response.text
 
 
