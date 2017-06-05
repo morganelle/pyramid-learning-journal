@@ -1,6 +1,6 @@
 """Set up the route returns."""
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from learning_journal.models import JournalEntry
 import datetime
 
@@ -36,9 +36,26 @@ def detail_view(request):
 @view_config(route_name='create', renderer='../templates/new.jinja2')
 def create_view(request):
     """Return the create view."""
-    return {
-        'page': 'New Entry'
-    }
+    print('in create view')
+    print(request, request.method)
+    if request.method == 'POST' and request.POST:
+        if not request.POST['title'] or not request.POST['body']:
+            return {
+                'title': request.POST['title'],
+                'body': request.POST['body']
+            }
+        print('in createview POST logic')
+        new_entry = JournalEntry(
+            title=request.POST['title'],
+            body=request.POST['body'],
+            author='Morgan',
+            publish_date=datetime.datetime.now()
+        )
+        request.dbsession.add(new_entry)
+        return HTTPFound(
+            location=request.route_url('list')
+        )
+    return {}
 
 
 @view_config(route_name='update', renderer='../templates/edit.jinja2')
@@ -47,12 +64,21 @@ def update_view(request):
     the_id = int(request.matchdict['id'])
     session = request.dbsession
     entry = session.query(JournalEntry).get(the_id)
+
     if not entry:
         raise HTTPNotFound
-    return {
-        'page': 'Edit Entry',
-        'date': entry.publish_date,
-        'title': entry.title,
-        'text': entry.body,
-        'id': entry.id
-    }
+
+    if request.method == 'GET':
+        return {
+            'page': 'Edit Entry',
+            'date': entry.publish_date,
+            'title': entry.title,
+            'text': entry.body,
+            'id': entry.id
+        }
+
+    if request.method == 'POST':
+        entry.title = request.POST['title'],
+        entry.body = request.POST['body']
+        request.dbsession.flush()
+        return HTTPFound(request.route_url('detail', id=entry.id))

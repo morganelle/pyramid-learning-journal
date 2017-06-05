@@ -10,6 +10,7 @@ from faker import Faker
 import transaction
 
 
+SITE_ROOT = "http://localhost"
 FAKE_FACTORY = Faker()
 JOURNAL_ENTRIES = [JournalEntry(
     author=FAKE_FACTORY.name(),
@@ -31,7 +32,8 @@ def configuration(request):
     config = testing.setUp(settings={
         'sqlalchemy.url': 'postgres:///test_journal'
     })
-    config.include("learning_journal.models")
+    config.include('learning_journal.models')
+    config.include('learning_journal.routes')
 
     def teardown():
         testing.tearDown()
@@ -141,12 +143,16 @@ def fill_the_db(testapp):
     return dbsession
 
 
+@pytest.fixture
+def empty_the_db(testapp):
+    """Clear database and create a new empty one."""
+    SessionFactory = testapp.app.registry['dbsession_factory']
+    engine = SessionFactory().bind
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+
 # ++++++++ Unit Tests +++++++++ #
-
-
-def test_create_view_returns_content(create_response):
-    """Create view response includes content."""
-    assert 'page' in create_response
 
 
 def test_detail_view_with_id_raises_except(dummy_request):
@@ -205,12 +211,70 @@ def test_list_view_returns_count_matching_database(dummy_request, add_models):
     assert len(response['entry']) == query.count()
 
 
-# # ++++++++ Functional Tests +++++++++ #
+def test_create_view_post_empty_is_empty_dict(dummy_request):
+    """POST requests should return empty dictionary."""
+    from learning_journal.views.default import create_view
+    dummy_request.method = 'POST'
+    response = create_view(dummy_request)
+    assert response == {}
 
-def test_db_fill(fill_the_db):
-    """Test to see if we can instantiate and load a DB."""
-    fill_the_db
-    assert len(fill_the_db.query(JournalEntry).all()) == 20
+
+def test_create_view_post_incomplete_data_returns_data(dummy_request):
+        """Incomplete POST data returned to user."""
+        from learning_journal.views.default import create_view
+        dummy_request.method = "POST"
+        post_data = {'body': 'fake title', 'title': ''}
+        dummy_request.POST = post_data
+        response = create_view(dummy_request)
+        assert response == post_data
+
+
+def test_create_view_post_with_data_302(dummy_request):
+        """POST request with correct data should redirect with status code 302."""
+        from learning_journal.views.default import create_view
+        dummy_request.method = "POST"
+        post_data = {
+            'title': 'cake title',
+            'body': FAKE_FACTORY.text(300)
+        }
+        dummy_request.POST = post_data
+        response = create_view(dummy_request)
+        assert response.status_code == 302
+
+
+# def test_update_view_post_with_data(db_session, dummy_request):
+#         """POST request with correct data should redirect with status code 302."""
+#         from learning_journal.views.default import update_view
+#         model = JournalEntry(
+#             title='Fake Category',
+#             publish_date=datetime.datetime.now(),
+#             author='Whoever',
+#             body='Some text in the body'
+#         )
+#         db_session.add(model)
+#         get_entry = db_session.query(JournalEntry)
+#         dummy_request.GET = get_entry[0]
+#         import pdb; pdb.set_trace()
+#         response = update_view(dummy_request)
+#         assert post_data['title'] in response.text
+#         assert post_data['body'] in response.text
+
+
+# ++++++++ Functional Tests +++++++++ #
+
+
+def test_no_items_on_list_empty_db(testapp):
+    """When redirection is followed, result is home page."""
+    response = testapp.get('/')
+    post_count = response.html.find_all('section')
+    assert len(post_count) == 0
+
+
+def test_db_fill(testapp, fill_the_db):
+    """Test to instantiate and load a DB."""
+    response = testapp.get('/')
+    post_count = response.html.find_all('section')
+    assert len(fill_the_db.query(JournalEntry).all()) == len(post_count)
 
 
 def test_list_route_returns_list_content(testapp, fill_the_db):
@@ -234,7 +298,96 @@ def test_update_route_returns_detail_content(testapp):
     assert '<h1>Edit post</h1>' in response.text
 
 
+def test_detail_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/1', status=200)
+    assert '<article class="blog-post">' in response.text
+
+
+def test_list_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/', status=200)
+    assert '<a href="/journal/new-entry">' in response.text
+
+
+def test_create_view_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/new-entry', status=200)
+    assert '<h1>Create a new post</h1>' in response.text
+
+
+def test_update_with_valid_route(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/1/edit-entry', status=200)
+    assert '<h1>Edit post</h1>' in response.text
+
+
 def test_detail_with_invald_id(testapp):
-    """."""
+    """Detail page with invalid route gets correct template."""
     response = testapp.get('/journal/cake', status=404)
     assert 'Page Not Found' in response.text
+
+
+def test_list_with_invald_id(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/list/1', status=404)
+    assert 'Page Not Found' in response.text
+
+
+def test_create_view_with_invald_id(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journa/new-entry/hello', status=404)
+    assert 'Page Not Found' in response.text
+
+
+def test_update_with_invald_id(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/cake/edit-entry', status=404)
+    assert 'Page Not Found' in response.text
+
+
+def test_new_entry_redirects_to_list(testapp, empty_the_db):
+    """New post added successfully, check reroute."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    response = testapp.post('/journal/new-entry', post_data)
+    list_route = testapp.app.routes_mapper.get_route('list').path
+    assert response.location == SITE_ROOT + list_route
+
+
+def test_new_entry_redirection_lands_on_list(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    response = testapp.post('/journal/new-entry', post_data)
+    next_response = response.follow()
+    list_response = testapp.get('/')
+    assert next_response.text == list_response.text
+
+
+def test_new_entry_detail_exists(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    testapp.post('/journal/new-entry', post_data)
+    details_response = testapp.get('/journal/1')
+    assert post_data['title'] in details_response.text
+    assert post_data['body'] in details_response.text
+
+
+def test_update_view_displays_correct_content(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    testapp.post('/journal/new-entry', post_data)
+    details_response = testapp.get('/journal/1/edit-entry')
+    assert post_data['title'] in details_response.text
+    assert post_data['body'] in details_response.text
