@@ -242,6 +242,24 @@ def test_create_view_post_with_data_302(dummy_request):
         assert response.status_code == 302
 
 
+# def test_update_view_post_with_data(db_session, dummy_request):
+#         """POST request with correct data should redirect with status code 302."""
+#         from learning_journal.views.default import update_view
+#         model = JournalEntry(
+#             title='Fake Category',
+#             publish_date=datetime.datetime.now(),
+#             author='Whoever',
+#             body='Some text in the body'
+#         )
+#         db_session.add(model)
+#         get_entry = db_session.query(JournalEntry)
+#         dummy_request.GET = get_entry[0]
+#         import pdb; pdb.set_trace()
+#         response = update_view(dummy_request)
+#         assert post_data['title'] in response.text
+#         assert post_data['body'] in response.text
+
+
 # ++++++++ Functional Tests +++++++++ #
 
 
@@ -349,3 +367,27 @@ def test_new_entry_redirection_lands_on_list(testapp, empty_the_db):
     next_response = response.follow()
     list_response = testapp.get('/')
     assert next_response.text == list_response.text
+
+
+def test_new_entry_detail_exists(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    testapp.post('/journal/new-entry', post_data)
+    details_response = testapp.get('/journal/1')
+    assert post_data['title'] in details_response.text
+    assert post_data['body'] in details_response.text
+
+
+def test_update_view_displays_correct_content(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    post_data = {
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    testapp.post('/journal/new-entry', post_data)
+    details_response = testapp.get('/journal/1/edit-entry')
+    assert post_data['title'] in details_response.text
+    assert post_data['body'] in details_response.text

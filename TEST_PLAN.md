@@ -31,9 +31,9 @@
 - ~~invalid list route returns 404~~
 - ~~invalid detail route returns 404~~
 - ~~valid update route returns 200~~
-- valid update route results in correct content rendered on page
+- ~~valid update route results in correct content rendered on page~~
 - ~~valid create route returns 200~~
 - ~~valid detail route returns 200~~
-- valid detail route results in correct content rendered on page
+- ~~new entry displays on its detail page~~
 - ~~valid list route returns 200~~
 - ~~valid list route results in correct content rendered on page~~
