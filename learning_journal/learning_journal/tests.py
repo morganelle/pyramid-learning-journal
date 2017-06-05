@@ -272,12 +272,30 @@ def test_update_route_returns_detail_content(testapp):
 
 
 def test_detail_with_invald_id(testapp):
-    """."""
+    """Detail page with invalid route gets correct template."""
     response = testapp.get('/journal/cake', status=404)
     assert 'Page Not Found' in response.text
 
 
-def test_new_entry_redirects_to_home(testapp, empty_the_db):
+def test_list_with_invald_id(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/list/1', status=404)
+    assert 'Page Not Found' in response.text
+
+
+def test_create_view_with_invald_id(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journa/new-entry/hello', status=404)
+    assert 'Page Not Found' in response.text
+
+
+def test_update_with_invald_id(testapp):
+    """Detail page with invalid route gets correct template."""
+    response = testapp.get('/journal/cake/edit-entry', status=404)
+    assert 'Page Not Found' in response.text
+
+
+def test_new_entry_redirects_to_list(testapp, empty_the_db):
     """New post added successfully, check reroute."""
     post_data = {
         'title': FAKE_FACTORY.text(20),
@@ -288,7 +306,7 @@ def test_new_entry_redirects_to_home(testapp, empty_the_db):
     assert response.location == SITE_ROOT + list_route
 
 
-def test_new_entry_redirection_lands_on_home(testapp, empty_the_db):
+def test_new_entry_redirection_lands_on_list(testapp, empty_the_db):
     """When redirection is followed, result is home page."""
     post_data = {
         'title': FAKE_FACTORY.text(20),

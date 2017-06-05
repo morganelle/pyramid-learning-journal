@@ -14,10 +14,8 @@
 - ~~create_view returns dictionary for incomplete POST request~~
 - update_view has 302 status code after successful POST
 - ~~create_view has 302 status code after POST~~
-
-## Unit tests: models
-- generated journal entries are instance of JournalEntry model class 
-- model can be added successfully to database
+- ~~generated journal entries are instance of JournalEntry model class~~
+- ~~model can be added successfully to database~~
 - model can be updated in database
 - list view returns empty when database empty
 - list view shows same number of items as database
@@ -26,10 +24,10 @@
 ## Functional tests: system
 - ~~update_view redirects to detail view of journal entry~~
 - ~~create_view redirects to list route~~
-- general invalid route returns 404
-- invalid update route returns 404
-- invalid create route returns 404
-- invalid list route returns 404
+- ~~general invalid route returns 404~~
+- ~~invalid update route returns 404~~
+- ~~invalid create route returns 404~~
+- ~~invalid list route returns 404~~
 - ~~invalid detail route returns 404~~
 - valid update route returns 200
 - valid update route results in correct content rendered on page
