@@ -288,7 +288,7 @@ def test_new_entry_redirects_to_home(testapp, empty_the_db):
     assert response.location == SITE_ROOT + list_route
 
 
-def test_new_expense_redirection_lands_on_home(testapp, empty_the_db):
+def test_new_entry_redirection_lands_on_home(testapp, empty_the_db):
     """When redirection is followed, result is home page."""
     post_data = {
         'title': FAKE_FACTORY.text(20),
