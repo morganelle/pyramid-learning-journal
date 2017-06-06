@@ -1,4 +1,6 @@
 """Set up the route returns."""
+from pyramid.security import remember, forget
+from learning_journal.security import check_credentials
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from learning_journal.models import JournalEntry
@@ -12,7 +14,8 @@ def list_view(request):
     entry = session.query(JournalEntry).order_by(JournalEntry.publish_date.desc()).all()
     return {
         'page': 'Home',
-        'entry': entry
+        'entry': entry,
+        'userauth': request.authenticated_userid
     }
 
 
@@ -29,11 +32,12 @@ def detail_view(request):
         'date': datetime.datetime.strftime(entry.publish_date, '%A %B %-d, %Y'),
         'title': entry.title,
         'text': entry.body,
-        'id': entry.id
+        'id': entry.id,
+        'userauth': request.authenticated_userid
     }
 
 
-@view_config(route_name='create', renderer='../templates/new.jinja2')
+@view_config(route_name='create', renderer='../templates/new.jinja2', permission='secret')
 def create_view(request):
     """Return the create view."""
     print('in create view')
@@ -58,7 +62,7 @@ def create_view(request):
     return {}
 
 
-@view_config(route_name='update', renderer='../templates/edit.jinja2')
+@view_config(route_name='update', renderer='../templates/edit.jinja2', permission='secret')
 def update_view(request):
     """Return the update view."""
     the_id = int(request.matchdict['id'])
@@ -82,3 +86,27 @@ def update_view(request):
         entry.body = request.POST['body']
         request.dbsession.flush()
         return HTTPFound(request.route_url('detail', id=entry.id))
+
+
+@view_config(route_name='login', renderer='../templates/login.jinja2')
+def login(request):
+    """View for logging in a user."""
+    if request.method == "GET":
+        return {}
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        if check_credentials(username, password):
+            headers = remember(request, username)
+            return HTTPFound(
+                location=request.route_url('list'),
+                headers=headers
+            )
+        return {'error': 'Bad username or password'}
+
+
+@view_config(route_name='logout')
+def logout(request):
+    """Log user out."""
+    headers = forget(request)
+    return HTTPFound(request.route_url('list'), headers=headers)

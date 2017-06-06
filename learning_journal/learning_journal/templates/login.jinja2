@@ -1,0 +1,17 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+    <div id="page-content">
+      <section id="write-blog">
+        <h1>Login</h1>
+        <form id="blog-fields" method="POST">
+          <label class="label">Username</label>
+            <input name="username" value="{{ username }}" pattern="\w+" type="text" id="post-title" required>
+          <label class="label">Password</label>
+            <input name="password" value="{{ password }}" pattern="\w+" type="text" id="post-title" required>
+          <input type="submit" value="Login" class="button">
+        </form>
+        {{ error }}
+      </section>
+    </div>
+{% endblock content %}
