@@ -7,7 +7,7 @@ from learning_journal.models import JournalEntry
 import datetime
 
 
-@view_config(route_name='list', renderer='../templates/list.jinja2')
+@view_config(route_name='list', renderer='../templates/list.jinja2', require_csrf=False)
 def list_view(request):
     """Return the home view."""
     session = request.dbsession
@@ -19,7 +19,7 @@ def list_view(request):
     }
 
 
-@view_config(route_name='detail', renderer='../templates/detail.jinja2')
+@view_config(route_name='detail', renderer='../templates/detail.jinja2', require_csrf=False)
 def detail_view(request):
     """Return the detail view."""
     the_id = int(request.matchdict['id'])
@@ -88,7 +88,7 @@ def update_view(request):
         return HTTPFound(request.route_url('detail', id=entry.id))
 
 
-@view_config(route_name='login', renderer='../templates/login.jinja2')
+@view_config(route_name='login', renderer='../templates/login.jinja2', require_csrf=False)
 def login_view(request):
     """View for logging in a user."""
     if request.method == "GET":
@@ -105,7 +105,7 @@ def login_view(request):
         return {'error': 'Bad username or password'}
 
 
-@view_config(route_name='logout')
+@view_config(route_name='logout', require_csrf=False)
 def logout(request):
     """Log user out."""
     headers = forget(request)
