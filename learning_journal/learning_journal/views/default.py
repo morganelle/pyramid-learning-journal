@@ -89,7 +89,7 @@ def update_view(request):
 
 
 @view_config(route_name='login', renderer='../templates/login.jinja2')
-def login(request):
+def login_view(request):
     """View for logging in a user."""
     if request.method == "GET":
         return {}

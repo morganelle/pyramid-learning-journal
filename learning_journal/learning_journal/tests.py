@@ -1,11 +1,12 @@
 """Learning Journal tests."""
 from pyramid import testing
 from pyramid.config import Configurator
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from learning_journal.models import JournalEntry, get_tm_session
 import pytest
 from learning_journal.models.meta import Base
 import datetime
+import os
 from faker import Faker
 import transaction
 
@@ -260,6 +261,78 @@ def test_create_view_post_with_data_302(dummy_request):
 #         assert post_data['body'] in response.text
 
 
+def test_login_view_bad_login(dummy_request):
+    """."""
+    from learning_journal.views.default import login_view
+    dummy_request.method = 'POST'
+    post_data = {
+        'username': 'notmyname',
+        'password': 'notmypw'
+    }
+    dummy_request.POST = post_data
+    assert login_view(dummy_request) == {'error': 'Bad username or password'}
+
+
+def test_login_view_bad_login_pw(dummy_request):
+    """."""
+    from learning_journal.views.default import login_view
+    dummy_request.method = 'POST'
+    post_data = {
+        'username': os.environ.get('AUTH_USERNAME'),
+        'password': 'notmypw'
+    }
+    print(post_data['username'], post_data['password'])
+    # import pdb; pdb.set_trace()
+    dummy_request.POST = post_data
+    assert login_view(dummy_request) == {'error': 'Bad username or password'}
+
+
+# def test_login_view_bad_login_username(dummy_request):
+#     """."""
+#     from learning_journal.views.default import login_view
+#     dummy_request.method = 'POST'
+#     post_data = {
+#         'username': 'notmyname',
+#         'password': '' # add unhashed pw here
+#     }
+#     print(post_data['username'], post_data['password'])
+#     dummy_request.POST = post_data
+#     assert login_view(dummy_request) == {'error': 'Bad username or password'}
+
+
+# def test_login_view_good_login(dummy_request):
+#     """."""
+#     from learning_journal.views.default import login_view
+#     dummy_request.method = 'POST'
+#     post_data = {
+#         'username': os.environ.get('AUTH_USERNAME'),
+#         'password': '' # add unhashed pw here
+#     }
+#     print(post_data['username'], post_data['password'])
+#     dummy_request.POST = post_data
+#     assert isinstance(login_view(dummy_request), HTTPFound)
+
+
+def test_login_view_get(dummy_request):
+    """."""
+    from learning_journal.views.default import login_view
+    dummy_request.method = 'GET'
+    assert login_view(dummy_request) == {}
+
+
+def test_logout_view_post_302(dummy_request):
+        """POST request with correct data should redirect with status code 302."""
+        from learning_journal.views.default import logout
+        response = logout(dummy_request)
+        assert response.status_code == 302
+
+
+def test_logout_view_post_return(dummy_request):
+        """POST request with correct data should redirect with status code 302."""
+        from learning_journal.views.default import logout
+        assert isinstance(logout(dummy_request), HTTPFound)
+
+
 # ++++++++ Functional Tests +++++++++ #
 
 
@@ -307,7 +380,7 @@ def test_detail_with_valid_route(testapp):
 def test_list_with_valid_route(testapp):
     """Detail page with invalid route gets correct template."""
     response = testapp.get('/', status=200)
-    assert '<a href="/journal/new-entry">' in response.text
+    assert '<section class="list-post">' in response.text
 
 
 def test_create_view_with_valid_route(testapp):
