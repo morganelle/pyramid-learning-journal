@@ -10,10 +10,6 @@ Deployed on Heroku at https://rocky-inlet-61764.herokuapp.com/
 In order to test, please create the following environmental variables:
 - DATABASE_URL
 - AUTH_SECRET
-- AUTH_USERNAME
-- AUTH_PASSWORD
-
-In addition, there are two commented-out tests (test_login_view_bad_login_username and test_login_view_good_login) that will require entering in un-hashed passwords.
 
 
 ## Tests:
