@@ -307,9 +307,10 @@ def test_update_view_post_updates_db(db_session, dummy_request):
         dummy_request.method = 'POST'
         dummy_request.matchdict['id'] = get_entry
         dummy_request.POST = post_data
-        update_view(dummy_request)
+        response = update_view(dummy_request)
         updated_entry = db_session.query(JournalEntry)
         assert updated_entry[0].body == post_data['body']
+        assert isinstance(response, HTTPFound)
 
 
 def test_login_view_bad_login(dummy_request):

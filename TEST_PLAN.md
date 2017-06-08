@@ -3,21 +3,25 @@
 ## Unit tests: view functions
 - ~~list_view populates list template with journal entries~~
 - detail_view populates detail template with journal entry that matches request id
-- update_view populates form with journal entry that matches request id (when 'update' route hit with GET method)
-- update_view accepts valid POST request
-- update_view raises error if POST request missing data
-- update_view accepts valid POST request
+- ~~update_view populates form with journal entry that matches request id (when 'update' route hit with GET method)~~
+- ~~update_view accepts valid POST request~~
 - ~~create_view returns data if POST request missing data~~
 - ~~detail_view raises HTTPNotFound error if JournalEntry doesn't exist~~
 - ~~update_view raises HTTPNotFound error if JournalEntry doesn't exist~~
 - ~~create_view returns an empty dictionary for POST request~~
 - ~~create_view returns dictionary for incomplete POST request~~
-- update_view has 302 status code after successful POST
+- ~~update_view has 302 status code after successful POST~~
 - ~~update_view raises HTTPNotFound error if id doesn't exist~~
 - ~~create_view has 302 status code after POST~~
 - ~~generated journal entries are instance of JournalEntry model class~~
 - ~~model can be added successfully to database~~
-- model can be updated in database
+- ~~model can be updated in database~~
+- ~~login view with bad pw and username returns error~~
+- ~~login view with bad pw and good username returns error~~
+- ~~login view with good pw and bad username returns error~~
+- ~~login view with correct credentials returns HTTPFound object~~
+- ~~logout function returns 302 status code~~
+- ~~logout function returns instance of HTTP found~~ 
 
 
 ## Functional tests: system
