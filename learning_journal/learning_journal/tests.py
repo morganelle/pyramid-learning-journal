@@ -243,22 +243,73 @@ def test_create_view_post_with_data_302(dummy_request):
         assert response.status_code == 302
 
 
-# def test_update_view_post_with_data(db_session, dummy_request):
-#         """POST request with correct data should redirect with status code 302."""
-#         from learning_journal.views.default import update_view
-#         model = JournalEntry(
-#             title='Fake Category',
-#             publish_date=datetime.datetime.now(),
-#             author='Whoever',
-#             body='Some text in the body'
-#         )
-#         db_session.add(model)
-#         get_entry = db_session.query(JournalEntry)
-#         dummy_request.GET = get_entry[0]
-#         import pdb; pdb.set_trace()
-#         response = update_view(dummy_request)
-#         assert post_data['title'] in response.text
-#         assert post_data['body'] in response.text
+def test_update_view_post_with_data(db_session, dummy_request):
+        """Get request on update view shows correct content."""
+        from learning_journal.views.default import update_view
+        model = JournalEntry(
+            title='Fake Category',
+            publish_date=datetime.datetime.now(),
+            author='A big bozo',
+            body='Some text in the body'
+        )
+        db_session.add(model)
+        get_entry = db_session.query(JournalEntry)
+        get_entry = get_entry[0].id
+        get_entry = str(get_entry)
+        dummy_request.method = 'GET'
+        dummy_request.matchdict['id'] = get_entry
+        response = update_view(dummy_request)
+        assert model.title in response['title']
+        assert model.body in response['text']
+
+
+def test_update_view_post_with_data_302(db_session, dummy_request):
+        """Get request on update view shows correct content."""
+        from learning_journal.views.default import update_view
+        post_data = {
+            'title': 'cake title',
+            'body': 'updated text'
+        }
+        model = JournalEntry(
+            title='Fake Category',
+            publish_date=datetime.datetime.now(),
+            author='A big bozo',
+            body='Some text in the body'
+        )
+        db_session.add(model)
+        get_entry = db_session.query(JournalEntry)
+        get_entry = get_entry[0].id
+        get_entry = str(get_entry)
+        dummy_request.method = 'POST'
+        dummy_request.matchdict['id'] = get_entry
+        dummy_request.POST = post_data
+        response = update_view(dummy_request)
+        assert response.status_code == 302
+
+
+def test_update_view_post_updates_db(db_session, dummy_request):
+        """Get request on update view shows correct content."""
+        from learning_journal.views.default import update_view
+        post_data = {
+            'title': 'cake title',
+            'body': 'updated text'
+        }
+        model = JournalEntry(
+            title='Fake Category',
+            publish_date=datetime.datetime.now(),
+            author='A big bozo',
+            body='Some text in the body'
+        )
+        db_session.add(model)
+        get_entry = db_session.query(JournalEntry)
+        get_entry = get_entry[0].id
+        get_entry = str(get_entry)
+        dummy_request.method = 'POST'
+        dummy_request.matchdict['id'] = get_entry
+        dummy_request.POST = post_data
+        update_view(dummy_request)
+        updated_entry = db_session.query(JournalEntry)
+        assert updated_entry[0].body == post_data['body']
 
 
 def test_login_view_bad_login(dummy_request):
@@ -314,7 +365,7 @@ def test_login_view_bad_login_pw(dummy_request):
 
 
 def test_login_view_get(dummy_request):
-    """."""
+    """Login view returns empty dict on GET request."""
     from learning_journal.views.default import login_view
     dummy_request.method = 'GET'
     assert login_view(dummy_request) == {}
