@@ -52,7 +52,7 @@ def create_view(request):
         new_entry = JournalEntry(
             title=request.POST['title'],
             body=request.POST['body'],
-            author='Morgan',
+            author=u'Morgan',
             publish_date=datetime.datetime.now()
         )
         request.dbsession.add(new_entry)

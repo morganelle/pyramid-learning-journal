@@ -106,7 +106,7 @@ def update_response():
 @pytest.fixture
 def set_credentials():
     """Create credentials for test."""
-    from learning_journal.security import context
+    from passlib.apps import custom_app_context as context
     import os
     os.environ['AUTH_USERNAME'] = 'usermcgee'
     os.environ['AUTH_PASSWORD'] = context.hash('bakeacake')
@@ -245,7 +245,7 @@ def test_create_view_post_with_data_302(dummy_request):
         from learning_journal.views.default import create_view
         dummy_request.method = "POST"
         post_data = {
-            'title': 'cake title',
+            'title': u'cake title',
             'body': FAKE_FACTORY.text(300)
         }
         dummy_request.POST = post_data
@@ -257,10 +257,10 @@ def test_update_view_post_with_data(db_session, dummy_request):
         """Get request on update view shows correct content."""
         from learning_journal.views.default import update_view
         model = JournalEntry(
-            title='Fake Category',
+            title=u'Fake Category',
             publish_date=datetime.datetime.now(),
-            author='A big bozo',
-            body='Some text in the body'
+            author=u'A big bozo',
+            body=u'Some text in the body'
         )
         db_session.add(model)
         get_entry = db_session.query(JournalEntry)
@@ -277,14 +277,14 @@ def test_update_view_post_with_data_302(db_session, dummy_request):
         """Get request on update view shows correct content."""
         from learning_journal.views.default import update_view
         post_data = {
-            'title': 'cake title',
-            'body': 'updated text'
+            'title': u'cake title',
+            'body': u'updated text'
         }
         model = JournalEntry(
-            title='Fake Category',
+            title=u'Fake Category',
             publish_date=datetime.datetime.now(),
-            author='A big bozo',
-            body='Some text in the body'
+            author=u'A big bozo',
+            body=u'Some text in the body'
         )
         db_session.add(model)
         get_entry = db_session.query(JournalEntry)
@@ -301,14 +301,14 @@ def test_update_view_post_updates_db(db_session, dummy_request):
         """Get request on update view shows correct content."""
         from learning_journal.views.default import update_view
         post_data = {
-            'title': 'cake title',
-            'body': 'updated text'
+            'title': u'cake title',
+            'body': u'updated text'
         }
         model = JournalEntry(
-            title='Fake Category',
+            title=u'Fake Category',
             publish_date=datetime.datetime.now(),
-            author='A big bozo',
-            body='Some text in the body'
+            author=u'A big bozo',
+            body=u'Some text in the body'
         )
         db_session.add(model)
         get_entry = db_session.query(JournalEntry)
@@ -324,7 +324,7 @@ def test_update_view_post_updates_db(db_session, dummy_request):
 
 
 def test_login_view_bad_login_both(dummy_request):
-    """."""
+    """Attempt log in with bad username and pw."""
     from learning_journal.views.default import login_view
     dummy_request.method = 'POST'
     post_data = {
@@ -336,7 +336,7 @@ def test_login_view_bad_login_both(dummy_request):
 
 
 def test_login_view_bad_login_pw(dummy_request, set_credentials):
-    """."""
+    """Attempt log in with good username and bad pw."""
     from learning_journal.views.default import login_view
     dummy_request.method = 'POST'
     post_data = {
@@ -348,7 +348,7 @@ def test_login_view_bad_login_pw(dummy_request, set_credentials):
 
 
 def test_login_view_bad_login_username(dummy_request, set_credentials):
-    """."""
+    """Attempt log in with bad username and good pw."""
     from learning_journal.views.default import login_view
     dummy_request.method = 'POST'
     post_data = {
@@ -360,7 +360,7 @@ def test_login_view_bad_login_username(dummy_request, set_credentials):
 
 
 def test_login_view_bad_login_empty(dummy_request):
-    """."""
+    """Attempt log in with empty username and pw."""
     from learning_journal.views.default import login_view
     dummy_request.method = 'POST'
     post_data = {
@@ -372,14 +372,13 @@ def test_login_view_bad_login_empty(dummy_request):
 
 
 def test_login_view_good_login(dummy_request, set_credentials):
-    """."""
+    """Attempt log in with good credentials"""
     from learning_journal.views.default import login_view
     dummy_request.method = 'POST'
     post_data = {
         'username': os.environ.get('AUTH_USERNAME'),
         'password': 'bakeacake'
     }
-    # import pdb; pdb.set_trace()
     dummy_request.POST = post_data
     assert isinstance(login_view(dummy_request), HTTPFound)
 
@@ -407,44 +406,7 @@ def test_logout_view_post_return(dummy_request):
 # ++++++++ Functional Tests +++++++++ #
 
 
-def test_unauthenticated_user_forbidden_create_route(testapp):
-    """Test status code of unauthenticated user."""
-    response = testapp.get('/journal/new-entry', status=403)
-    assert response.status_code == 403
-
-
-def test_login_route(testapp):
-    """."""
-    response = testapp.get('/login')
-    assert response.status_code == 200
-
-
-def test_login_route_good_creds(testapp):
-    """."""
-    response = testapp.post('/login', {
-        'username': os.environ.get('AUTH_USERNAME'),
-        'password': 'bakeacake'}
-    )
-    # import pdb; pdb.set_trace()
-    # assert 'auth_tkt' in response.headers('Set-Cookie')
-
-
-def test_login_route_form_method(testapp):
-    """."""
-    response = testapp.get('/login')
-    html = response.html
-    assert html.find('form').attrs['method'] == 'POST'
-    # assert html.find('input', {'name': 'submit'})
-    # assert html.find('input', {'value': 'Login'})
-
-
-def test_update_route_non_existent_entry(testapp):
-    """."""
-    response = testapp.get('/journal/1000/edit-entry', status=404)
-    assert response.status_code == 404
-
-
-def test_no_items_on_list_empty_db(testapp):
+def test_no_items_on_list_empty_db(testapp, empty_the_db):
     """When redirection is followed, result is home page."""
     response = testapp.get('/')
     post_count = response.html.find_all('section')
@@ -475,6 +437,10 @@ def test_detail_route_returns_detail_content(testapp):
 
 def test_update_route_returns_detail_content(testapp):
     """Test list route creates page that has list entries."""
+    testapp.post('/login', {
+        'username': os.environ.get('AUTH_USERNAME'),
+        'password': 'bakeacake'}
+    )
     response = testapp.get('/journal/10/edit-entry')
     assert '<h1>Edit post</h1>' in response.text
 
@@ -493,6 +459,10 @@ def test_list_with_valid_route(testapp):
 
 def test_create_view_with_valid_route(testapp):
     """Detail page with invalid route gets correct template."""
+    testapp.post('/login', {
+        'username': os.environ.get('AUTH_USERNAME'),
+        'password': 'bakeacake'}
+    )
     response = testapp.get('/journal/new-entry', status=200)
     assert '<h1>Create a new post</h1>' in response.text
 
@@ -527,48 +497,114 @@ def test_update_with_invald_id(testapp):
     assert 'Page Not Found' in response.text
 
 
-# def test_new_entry_redirects_to_list(testapp, empty_the_db):
-#     """New post added successfully, check reroute."""
-#     post_data = {
-#         'title': FAKE_FACTORY.text(20),
-#         'body': FAKE_FACTORY.text(300)
-#     }
-#     response = testapp.post('/journal/new-entry', post_data)
-#     list_route = testapp.app.routes_mapper.get_route('list').path
-#     assert response.location == SITE_ROOT + list_route
+def test_unauthenticated_user_forbidden_create_route(testapp):
+    """Test status code of unauthenticated user."""
+    testapp.get('/logout')
+    response = testapp.get('/journal/new-entry', status=403)
+    assert response.status_code == 403
 
 
-# def test_new_entry_redirection_lands_on_list(testapp, empty_the_db):
-#     """When redirection is followed, result is home page."""
-#     post_data = {
-#         'title': FAKE_FACTORY.text(20),
-#         'body': FAKE_FACTORY.text(300)
-#     }
-#     response = testapp.post('/journal/new-entry', post_data)
-#     next_response = response.follow()
-#     list_response = testapp.get('/')
-#     assert next_response.text == list_response.text
+def test_unauthenticated_user_forbidden_update_route(testapp):
+    """Test status code of unauthenticated user."""
+    response = testapp.get('/journal/1/edit-entry', status=403)
+    assert response.status_code == 403
 
 
-# def test_new_entry_detail_exists(testapp, empty_the_db):
-#     """When redirection is followed, result is home page."""
-#     post_data = {
-#         'title': FAKE_FACTORY.text(20),
-#         'body': FAKE_FACTORY.text(300)
-#     }
-#     testapp.post('/journal/new-entry', post_data)
-#     details_response = testapp.get('/journal/1')
-#     assert post_data['title'] in details_response.text
-#     assert post_data['body'] in details_response.text
+def test_login_route(testapp):
+    """Get a 200 status code from hitting login route."""
+    response = testapp.get('/login')
+    assert response.status_code == 200
 
 
-# def test_update_view_displays_correct_content(testapp, empty_the_db):
-#     """When redirection is followed, result is home page."""
-#     post_data = {
-#         'title': FAKE_FACTORY.text(20),
-#         'body': FAKE_FACTORY.text(300)
-#     }
-#     testapp.post('/journal/new-entry', post_data)
-#     details_response = testapp.get('/journal/1/edit-entry')
-#     assert post_data['title'] in details_response.text
-#     assert post_data['body'] in details_response.text
+def test_login_route_good_creds(testapp):
+    """Ensure auth_tkt in resonse headers after hitting login route."""
+    response = testapp.post('/login', {
+        'username': os.environ.get('AUTH_USERNAME'),
+        'password': 'bakeacake'}
+    )
+    assert 'auth_tkt' in response.headers['Set-Cookie']
+
+
+def test_logged_in_user_gets_200_create(testapp):
+    """Logged in user gets status 200 on create route."""
+    response = testapp.get('/journal/new-entry', status=200)
+    assert response.status_code == 200
+
+
+def test_logged_in_user_gets_200_update(testapp, fill_the_db):
+    """Logged in user gets status 200 on valid update page."""
+    response = testapp.get('/journal/1/edit-entry', status=200)
+    assert response.status_code == 200
+
+
+def test_login_route_form_method(testapp):
+    """Confirm the form method on login is post and input value is Login."""
+    response = testapp.get('/login')
+    html = response.html
+    assert html.find('form').attrs['method'] == 'POST'
+    assert html.find('input', type='submit').attrs['value'] == 'Login'
+
+
+def test_update_route_non_existent_entry(testapp):
+    """Test update route for a non-existent entry returns 404 status."""
+    response = testapp.get('/journal/1000/edit-entry', status=404)
+    assert response.status_code == 404
+
+
+def test_new_entry_redirects_to_list(testapp, empty_the_db):
+    """New post added successfully, check reroute."""
+    response = testapp.get('/journal/new-entry')
+    token = response.html.find('input', {'type': 'hidden'}).attrs['value']
+    post_data = {
+        'csrf_token': token,
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    response = testapp.post('/journal/new-entry', post_data)
+    list_route = testapp.app.routes_mapper.get_route('list').path
+    assert response.location == SITE_ROOT + list_route
+
+
+def test_new_entry_redirection_lands_on_list(testapp, empty_the_db):
+    """When redirection is followed, result is home page."""
+    response = testapp.get('/journal/new-entry')
+    token = response.html.find('input', {'type': 'hidden'}).attrs['value']
+    post_data = {
+        'csrf_token': token,
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    response = testapp.post('/journal/new-entry', post_data)
+    next_response = response.follow()
+    list_response = testapp.get('/')
+    assert next_response.text == list_response.text
+
+
+def test_new_entry_detail_exists(testapp, empty_the_db):
+    """Correct new post content appears on detail route."""
+    response = testapp.get('/journal/new-entry')
+    token = response.html.find('input', {'type': 'hidden'}).attrs['value']
+    post_data = {
+        'csrf_token': token,
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    testapp.post('/journal/new-entry', post_data)
+    details_response = testapp.get('/journal/1')
+    assert post_data['title'] in details_response.text
+    assert post_data['body'] in details_response.text
+
+
+def test_update_view_displays_correct_content(testapp, empty_the_db):
+    """Correct new post appears in edit view fields."""
+    response = testapp.get('/journal/new-entry')
+    token = response.html.find('input', {'type': 'hidden'}).attrs['value']
+    post_data = {
+        'csrf_token': token,
+        'title': FAKE_FACTORY.text(20),
+        'body': FAKE_FACTORY.text(300)
+    }
+    testapp.post('/journal/new-entry', post_data)
+    details_response = testapp.get('/journal/1/edit-entry')
+    assert post_data['title'] in details_response.text
+    assert post_data['body'] in details_response.text
