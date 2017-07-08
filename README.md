@@ -6,8 +6,12 @@ Collaborators: James Feore
 ## Deployment:
 Deployed on Heroku at https://rocky-inlet-61764.herokuapp.com/
 
+## Install locally:
+- pip install -r requirements.txt
+
 ## Test instructions:
-Test should run on their own as dummy environmental variables are included in tests.py.
+- test.py includes dummy environmental variables
+- run tox from the directory that tox.ini lives in
 
 
 ## Tests:
@@ -16,7 +20,7 @@ Please see TEST_PLAN.md
 
 ### Test coverage
 Latest tox report:
-
+```
 ---------- coverage: platform darwin, python 2.7.13-final-0 ----------
 Name                                      Stmts   Miss  Cover   Missing
 -----------------------------------------------------------------------
@@ -58,6 +62,7 @@ TOTAL                                       125      0   100%
   py27: commands succeeded
   py36: commands succeeded
   congratulations :)
+```
 
 
 ### Color palette
