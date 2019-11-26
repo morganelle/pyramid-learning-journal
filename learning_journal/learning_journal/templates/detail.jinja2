@@ -7,7 +7,9 @@
           <h2>{{ title }}</h2>
           <p class="post-content">{{ text }}</p>
         </article>
+        {% if userauth %}
         <a href="/journal/{{ id }}/edit-entry"><i class="fa fa-pencil fa-right" aria-hidden="true">Edit</i></a>
+        {% endif %}
 {#         <nav class="post">
           <ul>
             <li class="left"><a><i class="fa fa-angle-left fa-left" aria-hidden="true"></i>A great post</a></li>

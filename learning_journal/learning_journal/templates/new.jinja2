@@ -5,6 +5,7 @@
       <section id="write-blog">
         <h1>Create a new post</h1>
         <form id="blog-fields" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
           <label class="label">Title</label>
             <input name="title" type="text" id="post-title" required>
 {#           <label class="label">Publish date</label>
